@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mixed Conditionals — Practice</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,wght@0,500;0,600;1,500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #EEF2EC;
+    --surface: #FFFFFF;
+    --ink: #1E2B25;
+    --muted: #5C6A5F;
+    --rule: #D3DAD1;
+    --accent: #2F5D50;
+    --accent-dark: #22453B;
+    --correct: #3C7A4E;
+    --correct-bg: #E7F3EA;
+    --incorrect: #B0453A;
+    --incorrect-bg: #FBEAE7;
+    --hint: #8A6D3B;
+  }
+
+  * { box-sizing: border-box; }
+
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--ink);
+    font-family:'Inter', -apple-system, sans-serif;
+    line-height:1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  a { color: var(--accent); }
+
+  .wrap{
+    max-width: 700px;
+    margin: 0 auto;
+    padding: 0 24px 96px;
+  }
+
+  header{
+    padding: 48px 0 20px;
+  }
+
+  header h1{
+    font-family:'Source Serif 4', Georgia, serif;
+    font-weight:600;
+    font-size: 2.1rem;
+    margin: 0 0 10px;
+    letter-spacing: -0.01em;
+  }
+
+  header p{
+    color: var(--muted);
+    max-width: 54ch;
+    margin: 0 0 6px;
+    font-size: 0.99rem;
+  }
+
+  .rule{
+    height:1px;
+    background: var(--rule);
+    border:none;
+    margin: 22px 0 0;
+  }
+
+  .bar{
+    position: sticky;
+    top: 0;
+    z-index: 5;
+    background: rgba(238,242,236,0.92);
+    backdrop-filter: blur(6px);
+    border-bottom: 1px solid var(--rule);
+    padding: 12px 0;
+    display:flex;
+    align-items:center;
+    justify-content: space-between;
+    gap: 16px;
+  }
+
+  .bar-inner{
+    max-width: 700px;
+    margin: 0 auto;
+    padding: 0 24px;
+    display:flex;
+    align-items:center;
+    justify-content: space-between;
+    gap: 16px;
+    width:100%;
+  }
+
+  .score{
+    font-size: 0.92rem;
+    color: var(--muted);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .score strong{
+    color: var(--ink);
+    font-weight:600;
+  }
+
+  .progress-track{
+    flex:1;
+    height:6px;
+    background: var(--rule);
+    border-radius:3px;
+    overflow:hidden;
+    max-width: 160px;
+  }
+
+  .progress-fill{
+    height:100%;
+    background: var(--accent);
+    width:0%;
+    transition: width 0.3s ease;
+  }
+
+  .actions{
+    display:flex;
+    gap:8px;
+  }
+
+  button{
+    font-family:'Inter', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 600;
+    border-radius: 7px;
+    padding: 9px 16px;
+    cursor:pointer;
+    border: 1px solid transparent;
+    transition: background 0.15s ease, border-color 0.15s ease;
+  }
+
+  .btn-primary{
+    background: var(--accent);
+    color: #fff;
+  }
+  .btn-primary:hover{ background: var(--accent-dark); }
+
+  .btn-ghost{
+    background: transparent;
+    color: var(--muted);
+    border-color: var(--rule);
+  }
+  .btn-ghost:hover{ border-color: var(--muted); color: var(--ink); }
+
+  ol.questions{
+    list-style: none;
+    margin: 28px 0 0;
+    padding: 0;
+    counter-reset: q;
+  }
+
+  .q{
+    counter-increment: q;
+    padding: 22px 0;
+    border-bottom: 1px solid var(--rule);
+    display:flex;
+    gap: 14px;
+  }
+  .q:last-child{ border-bottom:none; }
+
+  .q-num{
+    flex: none;
+    width: 26px;
+    padding-top: 3px;
+    font-family:'Source Serif 4', serif;
+    font-size: 1.05rem;
+    color: var(--muted);
+  }
+
+  .q-body{ flex:1; min-width:0; }
+
+  .sentence{
+    font-size: 1.05rem;
+  }
+
+  .blank{
+    font-family:'Inter', sans-serif;
+    font-size: 0.98rem;
+    font-weight: 500;
+    color: var(--ink);
+    background: var(--surface);
+    border: 1.5px solid var(--rule);
+    border-radius: 6px;
+    padding: 3px 9px;
+    width: 148px;
+    max-width: 44vw;
+    text-align:center;
+    outline-offset: 2px;
+  }
+
+  .blank:focus{
+    border-color: var(--accent);
+    outline: none;
+  }
+
+  .blank.correct{
+    border-color: var(--correct);
+    background: var(--correct-bg);
+    color: var(--correct);
+  }
+
+  .blank.incorrect{
+    border-color: var(--incorrect);
+    background: var(--incorrect-bg);
+    color: var(--incorrect);
+  }
+
+  .hint{
+    font-size: 0.72rem;
+    color: var(--hint);
+    vertical-align: super;
+    margin: 0 1px 0 2px;
+  }
+
+  .feedback{
+    margin-top: 10px;
+    font-size: 0.88rem;
+    display:none;
+  }
+
+  .feedback.show{ display:block; }
+
+  .feedback .full{
+    color: var(--correct);
+  }
+
+  .feedback .full em{
+    font-style: normal;
+    font-weight: 600;
+  }
+
+  .reveal-link{
+    background:none;
+    border:none;
+    padding:0;
+    font-size: 0.85rem;
+    color: var(--muted);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    cursor:pointer;
+    font-weight:500;
+    margin-top: 8px;
+  }
+  .reveal-link:hover{ color: var(--accent); }
+
+  footer{
+    margin-top: 40px;
+    padding-top: 20px;
+    border-top: 1px solid var(--rule);
+    color: var(--muted);
+    font-size: 0.85rem;
+  }
+
+  @media (max-width: 480px){
+    header{ padding-top: 32px; }
+    header h1{ font-size: 1.7rem; }
+    .blank{ width: 130px; }
+    .bar-inner{ flex-wrap: wrap; }
+    .progress-track{ order:3; max-width: none; width:100%; }
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{ transition: none !important; }
+  }
+</style>
+</head>
+<body>
+
+<div class="bar">
+  <div class="bar-inner">
+    <div class="score"><strong id="scoreNum">0</strong>/<span id="scoreTotal">46</span> correct</div>
+    <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+    <div class="actions">
+      <button class="btn-ghost" id="resetBtn" type="button">Reset</button>
+      <button class="btn-primary" id="checkBtn" type="button">Check answers</button>
+    </div>
+  </div>
+</div>
+
+<div class="wrap">
+  <header>
+    <h1>Mixed conditionals</h1>
+    <p>Fill each gap with the correct form of the verb shown in the small gold hint. Some verbs need a negative form to make the sentence make sense.</p>
+    <p>Contractions are fine either way — "won't" or "will not" both work. Capitalisation doesn't matter.</p>
+    <hr class="rule">
+  </header>
+
+  <ol class="questions" id="questions"></ol>
+
+  <footer>
+    Original exercise by Bob Wilson, autoenglish.org. Interactive version for self-study.
+  </footer>
+</div>
+
+<script>
+const DATA = [
+  { segs:["If you ", " late again for training again today, I ", " you play in tomorrow's match."],
+    blanks:[ {hint:"to be", answers:["are"], display:"are"},
+             {hint:"let", answers:["wont let","will not let"], display:"won't let"} ] },
+
+  { segs:["I", " all August in Thailand if I ", " the time and the money. Maybe next year."],
+    blanks:[ {hint:"to spend", answers:["d spend","would spend"], display:"'d spend"},
+             {hint:"to have", answers:["had"], display:"had"} ] },
+
+  { segs:["I ", " angry if you ", " my chocolate mousse."],
+    blanks:[ {hint:"to be", answers:["wouldnt be","would not be"], display:"wouldn't be"},
+             {hint:"to eat", answers:["hadnt eaten","had not eaten"], display:"hadn't eaten"} ] },
+
+  { segs:["If just one person ", " my birthday, I ", " sad."],
+    blanks:[ {hint:"remember", answers:["had remembered"], display:"had remembered"},
+             {hint:"to be", answers:["wouldnt have been","would not have been"], display:"wouldn't have been"} ] },
+
+  { segs:["You", " sorry if you ", " for your exams."],
+    blanks:[ {hint:"to be", answers:["ll be","will be"], display:"'ll be"},
+             {hint:"to revise", answers:["dont revise","do not revise"], display:"don't revise"} ] },
+
+  { segs:["I ", " that umbrella inside the house if I ", " you. It's bad luck."],
+    blanks:[ {hint:"open", answers:["wouldnt open","would not open"], display:"wouldn't open"},
+             {hint:"to be", answers:["were"], display:"were"} ] },
+
+  { segs:["We", " out if there", " no food at home."],
+    blanks:[ {hint:"to eat", answers:["ll eat","will eat"], display:"'ll eat"},
+             {hint:"to be", answers:["s","is"], display:"'s"} ] },
+
+  { segs:["The holidays ", " great if the weather ", " better."],
+    blanks:[ {hint:"to be", answers:["would have been"], display:"would have been"},
+             {hint:"to be", answers:["had been"], display:"had been"} ] },
+
+  { segs:["I ", " out with him even if you ", " me."],
+    blanks:[ {hint:"to go", answers:["wouldnt go","would not go"], display:"wouldn't go"},
+             {hint:"to pay", answers:["paid"], display:"paid"} ] },
+
+  { segs:["If you ", " me about the concert, I ", "."],
+    blanks:[ {hint:"to tell", answers:["had told"], display:"had told"},
+             {hint:"to go", answers:["would have gone"], display:"would have gone"} ] },
+
+  { segs:["If you ", " so much beer, you ", " so fat."],
+    blanks:[ {hint:"to drink", answers:["didnt drink","did not drink"], display:"didn't drink"},
+             {hint:"to be", answers:["wouldnt be","would not be"], display:"wouldn't be"} ] },
+
+  { segs:["If I", " you were coming, I", " a cake."],
+    blanks:[ {hint:"to know", answers:["d known","had known"], display:"'d known"},
+             {hint:"to bake", answers:["d have baked","would have baked"], display:"'d have baked"} ] },
+
+  { segs:["The world ", " a better place if politicians ", " less vain."],
+    blanks:[ {hint:"to be", answers:["would be"], display:"would be"},
+             {hint:"to be", answers:["were"], display:"were"} ] },
+
+  { segs:["You", " it better if you ", " more time over it."],
+    blanks:[ {hint:"to do", answers:["ll do","will do"], display:"'ll do"},
+             {hint:"to take", answers:["take"], display:"take"} ] },
+
+  { segs:["If I ", " more about computers, I", " help you out."],
+    blanks:[ {hint:"to understand", answers:["understood"], display:"understood"},
+             {hint:"to be able to", answers:["d be able to","would be able to"], display:"'d be able to"} ] },
+
+  { segs:["I", " enough milk for the weekend if I ", " shopping on Friday."],
+    blanks:[ {hint:"to have", answers:["ll have","will have"], display:"'ll have"},
+             {hint:"to go", answers:["dont go","do not go"], display:"don't go"} ] },
+
+  { segs:["They", " their children if they ", " bad reports from school."],
+    blanks:[ {hint:"to punish", answers:["ll punish","will punish"], display:"'ll punish"},
+             {hint:"to get", answers:["get"], display:"get"} ] },
+
+  { segs:["What ", " you ", " if you ", " your house keys?"],
+    blanks:[ {hint:"", answers:["would"], display:"would"},
+             {hint:"to do", answers:["do"], display:"do"},
+             {hint:"to lose", answers:["lost"], display:"lost"} ] },
+
+  { segs:["What ", " you ", " if your neighbour ", " you to dinner?"],
+    blanks:[ {hint:"", answers:["would"], display:"would"},
+             {hint:"to do", answers:["do"], display:"do"},
+             {hint:"to invite", answers:["invited"], display:"invited"} ] },
+
+  { segs:["What ", " they ", " if they ", " to class today?"],
+    blanks:[ {hint:"", answers:["would"], display:"would"},
+             {hint:"to do", answers:["have done"], display:"have done"},
+             {hint:"to come", answers:["hadnt come","had not come"], display:"hadn't come"} ] },
+
+  { segs:["What type of music ", " they ", " if they ", " a disco?"],
+    blanks:[ {hint:"", answers:["would"], display:"would"},
+             {hint:"to play", answers:["play"], display:"play"},
+             {hint:"to have", answers:["had"], display:"had"} ] },
+];
+
+function normalize(s){
+  return s.toLowerCase()
+    .replace(/[’']/g, "")
+    .replace(/[^a-z\s]/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function fullSentence(q){
+  let out = q.segs[0];
+  q.blanks.forEach((b, i) => {
+    out += b.display;
+    out += q.segs[i+1];
+  });
+  return out;
+}
+
+const list = document.getElementById('questions');
+let totalBlanks = 0;
+
+DATA.forEach((q, qi) => {
+  const li = document.createElement('li');
+  li.className = 'q';
+
+  const num = document.createElement('div');
+  num.className = 'q-num';
+  num.textContent = (qi + 1) + '.';
+
+  const body = document.createElement('div');
+  body.className = 'q-body';
+
+  const sentence = document.createElement('div');
+  sentence.className = 'sentence';
+
+  q.segs.forEach((seg, i) => {
+    sentence.appendChild(document.createTextNode(seg));
+    if (i < q.blanks.length) {
+      const b = q.blanks[i];
+      totalBlanks++;
+      const input = document.createElement('input');
+      input.type = 'text';
+      input.className = 'blank';
+      input.autocomplete = 'off';
+      input.spellcheck = false;
+      input.dataset.q = qi;
+      input.dataset.b = i;
+      sentence.appendChild(input);
+      if (b.hint) {
+        const hint = document.createElement('sup');
+        hint.className = 'hint';
+        hint.textContent = '(' + b.hint + ')';
+        sentence.appendChild(hint);
+      }
+    }
+  });
+
+  const feedback = document.createElement('div');
+  feedback.className = 'feedback';
+  feedback.innerHTML = 'Full sentence: <span class="full"><em>' + fullSentence(q) + '</em></span>';
+
+  const revealBtn = document.createElement('button');
+  revealBtn.type = 'button';
+  revealBtn.className = 'reveal-link';
+  revealBtn.textContent = 'Show answer';
+  revealBtn.addEventListener('click', () => {
+    feedback.classList.add('show');
+    revealBtn.style.display = 'none';
+  });
+
+  body.appendChild(sentence);
+  body.appendChild(feedback);
+  body.appendChild(revealBtn);
+  li.appendChild(num);
+  li.appendChild(body);
+  list.appendChild(li);
+});
+
+document.getElementById('scoreTotal').textContent = totalBlanks;
+
+function checkAll(){
+  let correct = 0;
+  document.querySelectorAll('.blank').forEach(input => {
+    const qi = input.dataset.q, bi = input.dataset.b;
+    const accepted = DATA[qi].blanks[bi].answers.map(normalize);
+    const val = normalize(input.value);
+    input.classList.remove('correct', 'incorrect');
+    if (val.length === 0) return;
+    if (accepted.includes(val)) {
+      input.classList.add('correct');
+      correct++;
+    } else {
+      input.classList.add('incorrect');
+    }
+  });
+  document.getElementById('scoreNum').textContent = correct;
+  const pct = Math.round((correct / totalBlanks) * 100);
+  document.getElementById('progressFill').style.width = pct + '%';
+}
+
+function resetAll(){
+  document.querySelectorAll('.blank').forEach(input => {
+    input.value = '';
+    input.classList.remove('correct', 'incorrect');
+  });
+  document.querySelectorAll('.feedback').forEach(f => f.classList.remove('show'));
+  document.querySelectorAll('.reveal-link').forEach(b => b.style.display = '');
+  document.getElementById('scoreNum').textContent = 0;
+  document.getElementById('progressFill').style.width = '0%';
+}
+
+document.getElementById('checkBtn').addEventListener('click', checkAll);
+document.getElementById('resetBtn').addEventListener('click', resetAll);
+
+document.querySelectorAll('.blank').forEach(input => {
+  input.addEventListener('keydown', e => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      const all = Array.from(document.querySelectorAll('.blank'));
+      const idx = all.indexOf(input);
+      if (all[idx + 1]) all[idx + 1].focus();
+      else checkAll();
+    }
+  });
+});
+</script>
+
+</body>
+</html>
