@@ -1,519 +1,744 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Mixed Conditionals — Practice</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,wght@0,500;0,600;1,500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<style>
-  :root{
-    --bg: #EEF2EC;
-    --surface: #FFFFFF;
-    --ink: #1E2B25;
-    --muted: #5C6A5F;
-    --rule: #D3DAD1;
-    --accent: #2F5D50;
-    --accent-dark: #22453B;
-    --correct: #3C7A4E;
-    --correct-bg: #E7F3EA;
-    --incorrect: #B0453A;
-    --incorrect-bg: #FBEAE7;
-    --hint: #8A6D3B;
-  }
-
-  * { box-sizing: border-box; }
-
-  body{
-    margin:0;
-    background:var(--bg);
-    color:var(--ink);
-    font-family:'Inter', -apple-system, sans-serif;
-    line-height:1.6;
-    -webkit-font-smoothing: antialiased;
-  }
-
-  a { color: var(--accent); }
-
-  .wrap{
-    max-width: 700px;
-    margin: 0 auto;
-    padding: 0 24px 96px;
-  }
-
-  header{
-    padding: 48px 0 20px;
-  }
-
-  header h1{
-    font-family:'Source Serif 4', Georgia, serif;
-    font-weight:600;
-    font-size: 2.1rem;
-    margin: 0 0 10px;
-    letter-spacing: -0.01em;
-  }
-
-  header p{
-    color: var(--muted);
-    max-width: 54ch;
-    margin: 0 0 6px;
-    font-size: 0.99rem;
-  }
-
-  .rule{
-    height:1px;
-    background: var(--rule);
-    border:none;
-    margin: 22px 0 0;
-  }
-
-  .bar{
-    position: sticky;
-    top: 0;
-    z-index: 5;
-    background: rgba(238,242,236,0.92);
-    backdrop-filter: blur(6px);
-    border-bottom: 1px solid var(--rule);
-    padding: 12px 0;
-    display:flex;
-    align-items:center;
-    justify-content: space-between;
-    gap: 16px;
-  }
-
-  .bar-inner{
-    max-width: 700px;
-    margin: 0 auto;
-    padding: 0 24px;
-    display:flex;
-    align-items:center;
-    justify-content: space-between;
-    gap: 16px;
-    width:100%;
-  }
-
-  .score{
-    font-size: 0.92rem;
-    color: var(--muted);
-    font-variant-numeric: tabular-nums;
-  }
-
-  .score strong{
-    color: var(--ink);
-    font-weight:600;
-  }
-
-  .progress-track{
-    flex:1;
-    height:6px;
-    background: var(--rule);
-    border-radius:3px;
-    overflow:hidden;
-    max-width: 160px;
-  }
-
-  .progress-fill{
-    height:100%;
-    background: var(--accent);
-    width:0%;
-    transition: width 0.3s ease;
-  }
-
-  .actions{
-    display:flex;
-    gap:8px;
-  }
-
-  button{
-    font-family:'Inter', sans-serif;
-    font-size: 0.9rem;
-    font-weight: 600;
-    border-radius: 7px;
-    padding: 9px 16px;
-    cursor:pointer;
-    border: 1px solid transparent;
-    transition: background 0.15s ease, border-color 0.15s ease;
-  }
-
-  .btn-primary{
-    background: var(--accent);
-    color: #fff;
-  }
-  .btn-primary:hover{ background: var(--accent-dark); }
-
-  .btn-ghost{
-    background: transparent;
-    color: var(--muted);
-    border-color: var(--rule);
-  }
-  .btn-ghost:hover{ border-color: var(--muted); color: var(--ink); }
-
-  ol.questions{
-    list-style: none;
-    margin: 28px 0 0;
-    padding: 0;
-    counter-reset: q;
-  }
-
-  .q{
-    counter-increment: q;
-    padding: 22px 0;
-    border-bottom: 1px solid var(--rule);
-    display:flex;
-    gap: 14px;
-  }
-  .q:last-child{ border-bottom:none; }
-
-  .q-num{
-    flex: none;
-    width: 26px;
-    padding-top: 3px;
-    font-family:'Source Serif 4', serif;
-    font-size: 1.05rem;
-    color: var(--muted);
-  }
-
-  .q-body{ flex:1; min-width:0; }
-
-  .sentence{
-    font-size: 1.05rem;
-  }
-
-  .blank{
-    font-family:'Inter', sans-serif;
-    font-size: 0.98rem;
-    font-weight: 500;
-    color: var(--ink);
-    background: var(--surface);
-    border: 1.5px solid var(--rule);
-    border-radius: 6px;
-    padding: 3px 9px;
-    width: 148px;
-    max-width: 44vw;
-    text-align:center;
-    outline-offset: 2px;
-  }
-
-  .blank:focus{
-    border-color: var(--accent);
-    outline: none;
-  }
-
-  .blank.correct{
-    border-color: var(--correct);
-    background: var(--correct-bg);
-    color: var(--correct);
-  }
-
-  .blank.incorrect{
-    border-color: var(--incorrect);
-    background: var(--incorrect-bg);
-    color: var(--incorrect);
-  }
-
-  .hint{
-    font-size: 0.72rem;
-    color: var(--hint);
-    vertical-align: super;
-    margin: 0 1px 0 2px;
-  }
-
-  .feedback{
-    margin-top: 10px;
-    font-size: 0.88rem;
-    display:none;
-  }
-
-  .feedback.show{ display:block; }
-
-  .feedback .full{
-    color: var(--correct);
-  }
-
-  .feedback .full em{
-    font-style: normal;
-    font-weight: 600;
-  }
-
-  .reveal-link{
-    background:none;
-    border:none;
-    padding:0;
-    font-size: 0.85rem;
-    color: var(--muted);
-    text-decoration: underline;
-    text-underline-offset: 3px;
-    cursor:pointer;
-    font-weight:500;
-    margin-top: 8px;
-  }
-  .reveal-link:hover{ color: var(--accent); }
-
-  footer{
-    margin-top: 40px;
-    padding-top: 20px;
-    border-top: 1px solid var(--rule);
-    color: var(--muted);
-    font-size: 0.85rem;
-  }
-
-  @media (max-width: 480px){
-    header{ padding-top: 32px; }
-    header h1{ font-size: 1.7rem; }
-    .blank{ width: 130px; }
-    .bar-inner{ flex-wrap: wrap; }
-    .progress-track{ order:3; max-width: none; width:100%; }
-  }
-
-  @media (prefers-reduced-motion: reduce){
-    *{ transition: none !important; }
-  }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IELTS Academic Task 1 Vocabulary Practice</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+    </style>
 </head>
-<body>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col justify-between">
 
-<div class="bar">
-  <div class="bar-inner">
-    <div class="score"><strong id="scoreNum">0</strong>/<span id="scoreTotal">46</span> correct</div>
-    <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
-    <div class="actions">
-      <button class="btn-ghost" id="resetBtn" type="button">Reset</button>
-      <button class="btn-primary" id="checkBtn" type="button">Check answers</button>
-    </div>
-  </div>
-</div>
+    <header class="bg-indigo-700 text-white shadow-md sticky top-0 z-50">
+        <div class="max-w-6xl mx-auto px-4 py-4 flex flex-col md:flex-row justify-between items-center gap-4">
+            <div class="flex items-center space-x-3">
+                <div class="bg-white text-indigo-700 p-2 rounded-lg font-bold text-xl shadow-inner">
+                    IELTS
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold tracking-tight">Academic Task 1 Vocabulary Lab</h1>
+                    <p class="text-xs text-indigo-200">Master trends, proportions, fluctuations, and comparisons</p>
+                </div>
+            </div>
+            
+            <div class="flex items-center gap-4 bg-indigo-800/60 px-4 py-2 rounded-xl border border-indigo-500/30">
+                <div class="text-center px-2">
+                    <span class="block text-xs text-indigo-200 font-medium">Total Score</span>
+                    <span id="score-display" class="text-lg font-bold text-yellow-300">0 / 0</span>
+                </div>
+                <div class="h-8 w-px bg-indigo-600"></div>
+                <div class="text-center px-2">
+                    <span class="block text-xs text-indigo-200 font-medium">Accuracy</span>
+                    <span id="accuracy-display" class="text-lg font-bold text-emerald-300">0%</span>
+                </div>
+                <button onclick="resetAllProgress()" class="ml-2 text-indigo-200 hover:text-white transition-colors title='Reset All Progress'">
+                    <i class="fas fa-redo-alt"></i>
+                </button>
+            </div>
+        </div>
+    </header>
 
-<div class="wrap">
-  <header>
-    <h1>Mixed conditionals</h1>
-    <p>Fill each gap with the correct form of the verb shown in the small gold hint. Some verbs need a negative form to make the sentence make sense.</p>
-    <p>Contractions are fine either way — "won't" or "will not" both work. Capitalisation doesn't matter.</p>
-    <hr class="rule">
-  </header>
+    <main class="max-w-6xl mx-auto px-4 py-6 w-full flex-grow">
+        
+        <!-- Module Navigation Buttons -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
+            <button id="tab-btn-trends" onclick="switchTab('trends')" class="tab-btn p-3 rounded-xl font-semibold text-sm flex items-center justify-center gap-2 border shadow-sm transition-all bg-indigo-600 text-white border-indigo-600">
+                <i class="fas fa-chart-line"></i>
+                <span>1. Trend Synonyms</span>
+            </button>
+            <button id="tab-btn-mcq" onclick="switchTab('mcq')" class="tab-btn p-3 rounded-xl font-semibold text-sm flex items-center justify-center gap-2 border shadow-sm transition-all bg-white text-slate-600 border-slate-200 hover:bg-slate-100">
+                <i class="fas fa-list-check"></i>
+                <span>2. Percent & Data</span>
+            </button>
+            <button id="tab-btn-fill" onclick="switchTab('fill')" class="tab-btn p-3 rounded-xl font-semibold text-sm flex items-center justify-center gap-2 border shadow-sm transition-all bg-white text-slate-600 border-slate-200 hover:bg-slate-100">
+                <i class="fas fa-pen-to-square"></i>
+                <span>3. Contextual Fill-in</span>
+            </button>
+            <button id="tab-btn-rephrase" onclick="switchTab('rephrase')" class="tab-btn p-3 rounded-xl font-semibold text-sm flex items-center justify-center gap-2 border shadow-sm transition-all bg-white text-slate-600 border-slate-200 hover:bg-slate-100">
+                <i class="fas fa-retweet"></i>
+                <span>4. Sentence Rephrasing</span>
+            </button>
+        </div>
 
-  <ol class="questions" id="questions"></ol>
+        <!-- Global Progress Bar -->
+        <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 mb-6">
+            <div class="flex justify-between items-center mb-1">
+                <span id="module-title-display" class="text-sm font-semibold text-slate-700">Module Progress</span>
+                <span id="module-progress-text" class="text-xs font-bold text-indigo-600">0 of 0 Completed</span>
+            </div>
+            <div class="w-full bg-slate-100 h-2.5 rounded-full overflow-hidden">
+                <div id="module-progress-bar" class="bg-indigo-600 h-full w-0 transition-all duration-300"></div>
+            </div>
+        </div>
 
-  <footer>
-    Original exercise by Bob Wilson, autoenglish.org. Interactive version for self-study.
-  </footer>
-</div>
+        <!-- EXERCISE CONTAINER -->
+        <div id="exercise-view" class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 md:p-8">
+            <!-- Content dynamic inject via JavaScript -->
+        </div>
 
-<script>
-const DATA = [
-  { segs:["If you ", " late again for training again today, I ", " you play in tomorrow's match."],
-    blanks:[ {hint:"to be", answers:["are"], display:"are"},
-             {hint:"let", answers:["wont let","will not let"], display:"won't let"} ] },
+    </main>
 
-  { segs:["I", " all August in Thailand if I ", " the time and the money. Maybe next year."],
-    blanks:[ {hint:"to spend", answers:["d spend","would spend"], display:"'d spend"},
-             {hint:"to have", answers:["had"], display:"had"} ] },
+    <footer class="bg-slate-900 text-slate-400 py-6 border-t border-slate-800 text-center text-xs">
+        <div class="max-w-6xl mx-auto px-4 flex flex-col md:flex-row justify-between items-center gap-3">
+            <p>IELTS Academic Writing Preparation: Master High-Scoring Vocabulary for Task 1 Reports.</p>
+            <p class="text-slate-500">Practice regularmente to improve Lexical Resource scores.</p>
+        </div>
+    </footer>
 
-  { segs:["I ", " angry if you ", " my chocolate mousse."],
-    blanks:[ {hint:"to be", answers:["wouldnt be","would not be"], display:"wouldn't be"},
-             {hint:"to eat", answers:["hadnt eaten","had not eaten"], display:"hadn't eaten"} ] },
+    <script>
+        // Exercise Data Models
+        const trendsData = [
+            {
+                category: "Upward Movement",
+                description: "Select all verbs that accurately describe an upward trend.",
+                options: ["Rocketed", "Plummeted", "Surged", "Inclined", "Dipped", "Climbed"],
+                correct: ["Rocketed", "Surged", "Inclined", "Climbed"],
+                explanation: "'Rocketed', 'Surged', 'Inclined', and 'Climbed' mean to increase. 'Plummeted' and 'Dipped' represent downward movements."
+            },
+            {
+                category: "Downward Movement",
+                description: "Select all verbs that accurately describe a downward movement.",
+                options: ["Plunged", "Slumped", "Escalated", "Declined", "Soared", "Dropped"],
+                correct: ["Plunged", "Slumped", "Declined", "Dropped"],
+                explanation: "'Plunged', 'Slumped', 'Declined', and 'Dropped' mean to go down. 'Escalated' and 'Soared' mean to go up."
+            },
+            {
+                category: "Fluctuations & Instability",
+                description: "Which terms describe non-steady, rapidly changing data over time?",
+                options: ["Fluctuated", "Remained static", "Oscillated", "Wavered", "Plateaued", "Varied wildy"],
+                correct: ["Fluctuated", "Oscillated", "Wavered", "Varied wildy"],
+                explanation: "'Fluctuated', 'Oscillated', 'Wavered', and 'Varied wildy' show up and down changes. 'Plateaued' and 'Remained static' signify stability."
+            },
+            {
+                category: "High Points & Low Points",
+                description: "Match verbs/phrases used specifically for highest or lowest values.",
+                options: ["Reached a peak of", "Hit a trough of", "Bottomed out at", "Leveled off", "Climaxed at", "Hovered around"],
+                correct: ["Reached a peak of", "Hit a trough of", "Bottomed out at", "Climaxed at"],
+                explanation: "'Reached a peak' and 'Climaxed at' refer to maximum points. 'Hit a trough' and 'Bottomed out' refer to lowest points."
+            }
+        ];
 
-  { segs:["If just one person ", " my birthday, I ", " sad."],
-    blanks:[ {hint:"remember", answers:["had remembered"], display:"had remembered"},
-             {hint:"to be", answers:["wouldnt have been","would not have been"], display:"wouldn't have been"} ] },
+        const mcqData = [
+            {
+                question: "Which phrase best describes data that increased from 10% to 12% across 10 years?",
+                options: [
+                    "Increased dramatically",
+                    "Climbed marginally",
+                    "Rocketed substantially",
+                    "Shot up exponentially"
+                ],
+                answer: 1,
+                explanation: "A change of only 2% over a 10-year period is small, so 'marginally' is the correct adverb."
+            },
+            {
+                question: "Select the correct phrase to express 75% in an Academic Task 1 response.",
+                options: [
+                    "A small fraction",
+                    "Roughly three-quarters",
+                    "Just over a third",
+                    "A negligible proportion"
+                ],
+                answer: 1,
+                explanation: "75% is mathematically equivalent to three-quarters."
+            },
+            {
+                question: "What does 'plateaued' mean when describing a graph line?",
+                options: [
+                    "Decreased rapidly after a peak",
+                    "Fluctuated wildly before dropping",
+                    "Leveled off after a period of increase",
+                    "Reached its absolute minimum value"
+                ],
+                answer: 2,
+                explanation: "'Plateaued' means the data reached a steady horizontal level following an earlier period of growth."
+            },
+            {
+                question: "How should you describe a change from 52% to 48%?",
+                options: [
+                    "A sharp collapse",
+                    "A slight drop",
+                    "A precipitous fall",
+                    "A massive reduction"
+                ],
+                answer: 1,
+                explanation: "A 4% difference represents a minor change, best described by 'slight drop'."
+            },
+            {
+                question: "Which expression is appropriate for 33% of the total dataset?",
+                options: [
+                    "Nearly half",
+                    "Approximately one-third",
+                    "A vast majority",
+                    "A tiny minority"
+                ],
+                answer: 1,
+                explanation: "33% is very close to one-third (33.3%)."
+            }
+        ];
 
-  { segs:["You", " sorry if you ", " for your exams."],
-    blanks:[ {hint:"to be", answers:["ll be","will be"], display:"'ll be"},
-             {hint:"to revise", answers:["dont revise","do not revise"], display:"don't revise"} ] },
+        const fillData = [
+            {
+                sentence: "The number of visitors [BLANK1] sharply in July, reaching a peak of 10,000 before [BLANK2] back down to 4,000 in August.",
+                dropdowns: [
+                    { id: "BLANK1", options: ["soared", "plummeted", "stabilized"], correct: "soared" },
+                    { id: "BLANK2", options: ["plunging", "climbing", "hovering"], correct: "plunging" }
+                ],
+                explanation: "The sentence describes reaching a maximum high point ('peak'), so the first verb must mean rapid growth ('soared'), followed by a rapid fall ('plunging')."
+            },
+            {
+                sentence: "Car production [BLANK1] around 500 units for three consecutive months before experiencing a [BLANK2] drop to zero.",
+                dropdowns: [
+                    { id: "BLANK1", options: ["hovered", "soared", "peaked"], correct: "hovered" },
+                    { id: "BLANK2", options: ["substantial", "slight", "gradual"], correct: "substantial" }
+                ],
+                explanation: "'Hovered around' means staying nearly flat around a target level. A drop down to zero from 500 is a major change, requiring 'substantial'."
+            },
+            {
+                sentence: "A [BLANK1] majority of respondents chose public transport, accounting for [BLANK2] 85% of total responses.",
+                dropdowns: [
+                    { id: "BLANK1", options: ["vast", "minor", "slight"], correct: "vast" },
+                    { id: "BLANK2", options: ["approximately", "precisely", "marginally"], correct: "approximately" }
+                ],
+                explanation: "85% represents a large majority ('vast'). 'Approximately' is ideal for introducing rounded data estimations."
+            }
+        ];
 
-  { segs:["I ", " that umbrella inside the house if I ", " you. It's bad luck."],
-    blanks:[ {hint:"open", answers:["wouldnt open","would not open"], display:"wouldn't open"},
-             {hint:"to be", answers:["were"], display:"were"} ] },
+        const rephraseData = [
+            {
+                original: "Oil consumption went up quickly between 2005 and 2010.",
+                prompt: "Choose the higher-level academic equivalent for 'went up quickly':",
+                options: [
+                    "Oil consumption experienced a rapid rise between 2005 and 2010.",
+                    "Oil consumption had a slow growth between 2005 and 2010.",
+                    "Oil consumption dropped significantly between 2005 and 2010."
+                ],
+                correct: 0,
+                explanation: "'Experienced a rapid rise' converts the simple verb phrase 'went up quickly' into a sophisticated noun phrase ('rapid rise') suitable for Task 1."
+            },
+            {
+                original: "The figures for recycling fluctuated a lot throughout the decade.",
+                prompt: "Choose the best formal rephrasing for Task 1:",
+                options: [
+                    "Recycling numbers stayed completely static for ten years.",
+                    "The recycling figures underwent wild fluctuations over the ten-year period.",
+                    "Recycling numbers dipped a little bit across the decade."
+                ],
+                correct: 1,
+                explanation: "'Underwent wild fluctuations' accurately upgrades 'fluctuated a lot' into academic prose."
+            },
+            {
+                original: "Sales fell slowly to a low point of $1,000 in December.",
+                prompt: "Select the most effective academic rephrasing:",
+                options: [
+                    "Sales rose steadily to hit a high of $1,000 in December.",
+                    "Sales experienced a gradual decline, bottoming out at $1,000 in December.",
+                    "Sales plummeted suddenly to reach $1,000 in December."
+                ],
+                correct: 1,
+                explanation: "'Gradual decline' replaces 'fell slowly', and 'bottoming out at' replaces 'low point of'."
+            }
+        ];
 
-  { segs:["We", " out if there", " no food at home."],
-    blanks:[ {hint:"to eat", answers:["ll eat","will eat"], display:"'ll eat"},
-             {hint:"to be", answers:["s","is"], display:"'s"} ] },
+        // State Tracking
+        let currentTab = 'trends';
+        let userProgress = {
+            trends: { completed: [], score: 0, total: trendsData.length },
+            mcq: { completed: [], score: 0, total: mcqData.length },
+            fill: { completed: [], score: 0, total: fillData.length },
+            rephrase: { completed: [], score: 0, total: rephraseData.length }
+        };
 
-  { segs:["The holidays ", " great if the weather ", " better."],
-    blanks:[ {hint:"to be", answers:["would have been"], display:"would have been"},
-             {hint:"to be", answers:["had been"], display:"had been"} ] },
+        // Initialize App
+        window.onload = function() {
+            renderExerciseView();
+            updateScoreHeader();
+        };
 
-  { segs:["I ", " out with him even if you ", " me."],
-    blanks:[ {hint:"to go", answers:["wouldnt go","would not go"], display:"wouldn't go"},
-             {hint:"to pay", answers:["paid"], display:"paid"} ] },
+        // Switch Active Tab
+        function switchTab(tabKey) {
+            currentTab = tabKey;
+            
+            // Update button styles
+            const tabs = ['trends', 'mcq', 'fill', 'rephrase'];
+            tabs.forEach(t => {
+                const btn = document.getElementById(`tab-btn-${t}`);
+                if (t === tabKey) {
+                    btn.className = "tab-btn p-3 rounded-xl font-semibold text-sm flex items-center justify-center gap-2 border shadow-sm transition-all bg-indigo-600 text-white border-indigo-600";
+                } else {
+                    btn.className = "tab-btn p-3 rounded-xl font-semibold text-sm flex items-center justify-center gap-2 border shadow-sm transition-all bg-white text-slate-600 border-slate-200 hover:bg-slate-100";
+                }
+            });
 
-  { segs:["If you ", " me about the concert, I ", "."],
-    blanks:[ {hint:"to tell", answers:["had told"], display:"had told"},
-             {hint:"to go", answers:["would have gone"], display:"would have gone"} ] },
+            renderExerciseView();
+        }
 
-  { segs:["If you ", " so much beer, you ", " so fat."],
-    blanks:[ {hint:"to drink", answers:["didnt drink","did not drink"], display:"didn't drink"},
-             {hint:"to be", answers:["wouldnt be","would not be"], display:"wouldn't be"} ] },
+        // Render current module UI
+        function renderExerciseView() {
+            const container = document.getElementById('exercise-view');
+            updateProgressBar();
 
-  { segs:["If I", " you were coming, I", " a cake."],
-    blanks:[ {hint:"to know", answers:["d known","had known"], display:"'d known"},
-             {hint:"to bake", answers:["d have baked","would have baked"], display:"'d have baked"} ] },
+            if (currentTab === 'trends') {
+                renderTrendsModule(container);
+            } else if (currentTab === 'mcq') {
+                renderMCQModule(container);
+            } else if (currentTab === 'fill') {
+                renderFillModule(container);
+            } else if (currentTab === 'rephrase') {
+                renderRephraseModule(container);
+            }
+        }
 
-  { segs:["The world ", " a better place if politicians ", " less vain."],
-    blanks:[ {hint:"to be", answers:["would be"], display:"would be"},
-             {hint:"to be", answers:["were"], display:"were"} ] },
+        function renderTrendsModule(container) {
+            let html = `
+                <div class="mb-6">
+                    <h2 class="text-xl font-bold text-slate-800 flex items-center gap-2">
+                        <i class="fas fa-chart-line text-indigo-600"></i>
+                        Module 1: Categorize Trend Vocabulary
+                    </h2>
+                    <p class="text-sm text-slate-500 mt-1">Select all terms that belong to the specified trend category, then check your answer.</p>
+                </div>
+                <div class="space-y-8">
+            `;
 
-  { segs:["You", " it better if you ", " more time over it."],
-    blanks:[ {hint:"to do", answers:["ll do","will do"], display:"'ll do"},
-             {hint:"to take", answers:["take"], display:"take"} ] },
+            trendsData.forEach((item, index) => {
+                const isCompleted = userProgress.trends.completed.includes(index);
+                html += `
+                    <div class="p-5 rounded-xl border border-slate-200 bg-slate-50/50 hover:bg-white transition-all">
+                        <div class="flex justify-between items-center mb-3">
+                            <span class="text-xs font-bold uppercase tracking-wider text-indigo-600 bg-indigo-50 px-2.5 py-1 rounded-md border border-indigo-100">
+                                ${item.category}
+                            </span>
+                            <span class="text-xs text-slate-400 font-medium">Question ${index + 1} of ${trendsData.length}</span>
+                        </div>
+                        <p class="text-slate-700 font-medium text-sm mb-4">${item.description}</p>
+                        
+                        <div class="grid grid-cols-2 md:grid-cols-3 gap-2.5 mb-4">
+                            ${item.options.map((opt, optIdx) => `
+                                <label class="flex items-center gap-2.5 p-3 rounded-lg border border-slate-200 bg-white cursor-pointer hover:border-indigo-300 transition-all text-sm font-medium text-slate-700">
+                                    <input type="checkbox" name="trend-${index}" value="${opt}" ${isCompleted ? 'disabled' : ''} class="w-4 h-4 text-indigo-600 rounded focus:ring-indigo-500">
+                                    <span>${opt}</span>
+                                </label>
+                            `).join('')}
+                        </div>
 
-  { segs:["If I ", " more about computers, I", " help you out."],
-    blanks:[ {hint:"to understand", answers:["understood"], display:"understood"},
-             {hint:"to be able to", answers:["d be able to","would be able to"], display:"'d be able to"} ] },
+                        ${!isCompleted ? `
+                            <button onclick="checkTrendsAnswer(${index})" class="px-4 py-2 bg-indigo-600 text-white font-medium text-sm rounded-lg hover:bg-indigo-700 transition-colors shadow-sm">
+                                Submit Choice
+                            </button>
+                        ` : ''}
 
-  { segs:["I", " enough milk for the weekend if I ", " shopping on Friday."],
-    blanks:[ {hint:"to have", answers:["ll have","will have"], display:"'ll have"},
-             {hint:"to go", answers:["dont go","do not go"], display:"don't go"} ] },
+                        <div id="trends-feedback-${index}" class="${isCompleted ? '' : 'hidden'} mt-4"></div>
+                    </div>
+                `;
+            });
 
-  { segs:["They", " their children if they ", " bad reports from school."],
-    blanks:[ {hint:"to punish", answers:["ll punish","will punish"], display:"'ll punish"},
-             {hint:"to get", answers:["get"], display:"get"} ] },
+            html += `</div>`;
+            container.innerHTML = html;
 
-  { segs:["What ", " you ", " if you ", " your house keys?"],
-    blanks:[ {hint:"", answers:["would"], display:"would"},
-             {hint:"to do", answers:["do"], display:"do"},
-             {hint:"to lose", answers:["lost"], display:"lost"} ] },
+            // Re-render completed state if needed
+            trendsData.forEach((item, index) => {
+                if (userProgress.trends.completed.includes(index)) {
+                    showTrendsFeedback(index, false);
+                }
+            });
+        }
 
-  { segs:["What ", " you ", " if your neighbour ", " you to dinner?"],
-    blanks:[ {hint:"", answers:["would"], display:"would"},
-             {hint:"to do", answers:["do"], display:"do"},
-             {hint:"to invite", answers:["invited"], display:"invited"} ] },
+        function checkTrendsAnswer(index) {
+            const checkboxes = document.querySelectorAll(`input[name="trend-${index}"]:checked`);
+            const selected = Array.from(checkboxes).map(cb => cb.value);
+            const target = trendsData[index];
 
-  { segs:["What ", " they ", " if they ", " to class today?"],
-    blanks:[ {hint:"", answers:["would"], display:"would"},
-             {hint:"to do", answers:["have done"], display:"have done"},
-             {hint:"to come", answers:["hadnt come","had not come"], display:"hadn't come"} ] },
+            if (selected.length === 0) {
+                alert("Please select at least one word before submitting.");
+                return;
+            }
 
-  { segs:["What type of music ", " they ", " if they ", " a disco?"],
-    blanks:[ {hint:"", answers:["would"], display:"would"},
-             {hint:"to play", answers:["play"], display:"play"},
-             {hint:"to have", answers:["had"], display:"had"} ] },
-];
+            const isCorrect = selected.length === target.correct.length && 
+                              selected.every(val => target.correct.includes(val));
 
-function normalize(s){
-  return s.toLowerCase()
-    .replace(/[’']/g, "")
-    .replace(/[^a-z\s]/g, "")
-    .replace(/\s+/g, " ")
-    .trim();
-}
+            if (!userProgress.trends.completed.includes(index)) {
+                userProgress.trends.completed.push(index);
+                if (isCorrect) userProgress.trends.score += 1;
+            }
 
-function fullSentence(q){
-  let out = q.segs[0];
-  q.blanks.forEach((b, i) => {
-    out += b.display;
-    out += q.segs[i+1];
-  });
-  return out;
-}
+            updateScoreHeader();
+            updateProgressBar();
+            showTrendsFeedback(index, true, isCorrect);
+        }
 
-const list = document.getElementById('questions');
-let totalBlanks = 0;
+        function showTrendsFeedback(index, isNew, isCorrect) {
+            const target = trendsData[index];
+            const feedbackEl = document.getElementById(`trends-feedback-${index}`);
+            if (!feedbackEl) return;
 
-DATA.forEach((q, qi) => {
-  const li = document.createElement('li');
-  li.className = 'q';
+            feedbackEl.classList.remove('hidden');
+            
+            feedbackEl.innerHTML = `
+                <div class="p-4 rounded-lg bg-indigo-50/70 border border-indigo-100 text-sm">
+                    <div class="font-semibold text-slate-800 mb-1 flex items-center gap-2">
+                        <i class="fas fa-circle-info text-indigo-600"></i>
+                        <span>Answer Key & Explanation:</span>
+                    </div>
+                    <p class="text-slate-600 mb-2"><strong>Correct Terms:</strong> ${target.correct.join(', ')}</p>
+                    <p class="text-slate-600">${target.explanation}</p>
+                </div>
+            `;
 
-  const num = document.createElement('div');
-  num.className = 'q-num';
-  num.textContent = (qi + 1) + '.';
+            // Disable checkboxes
+            document.querySelectorAll(`input[name="trend-${index}"]`).forEach(cb => cb.disabled = true);
+        }
 
-  const body = document.createElement('div');
-  body.className = 'q-body';
+        function renderMCQModule(container) {
+            let html = `
+                <div class="mb-6">
+                    <h2 class="text-xl font-bold text-slate-800 flex items-center gap-2">
+                        <i class="fas fa-list-check text-indigo-600"></i>
+                        Module 2: Percentages, Proportions & Degree
+                    </h2>
+                    <p class="text-sm text-slate-500 mt-1">Select the best academic vocabulary choice for each given statistical scenario.</p>
+                </div>
+                <div class="space-y-8">
+            `;
 
-  const sentence = document.createElement('div');
-  sentence.className = 'sentence';
+            mcqData.forEach((item, index) => {
+                const isCompleted = userProgress.mcq.completed.includes(index);
+                html += `
+                    <div class="p-5 rounded-xl border border-slate-200 bg-slate-50/50 hover:bg-white transition-all">
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-xs font-bold text-indigo-600 bg-indigo-50 px-2.5 py-1 rounded-md border border-indigo-100">Question ${index + 1}</span>
+                        </div>
+                        <p class="text-slate-800 font-semibold text-base mb-4">${item.question}</p>
+                        
+                        <div class="space-y-2 mb-4">
+                            ${item.options.map((opt, optIdx) => `
+                                <label class="flex items-center gap-3 p-3 rounded-lg border border-slate-200 bg-white cursor-pointer hover:border-indigo-300 transition-all text-sm font-medium text-slate-700">
+                                    <input type="radio" name="mcq-${index}" value="${optIdx}" ${isCompleted ? 'disabled' : ''} class="w-4 h-4 text-indigo-600 focus:ring-indigo-500">
+                                    <span>${opt}</span>
+                                </label>
+                            `).join('')}
+                        </div>
 
-  q.segs.forEach((seg, i) => {
-    sentence.appendChild(document.createTextNode(seg));
-    if (i < q.blanks.length) {
-      const b = q.blanks[i];
-      totalBlanks++;
-      const input = document.createElement('input');
-      input.type = 'text';
-      input.className = 'blank';
-      input.autocomplete = 'off';
-      input.spellcheck = false;
-      input.dataset.q = qi;
-      input.dataset.b = i;
-      sentence.appendChild(input);
-      if (b.hint) {
-        const hint = document.createElement('sup');
-        hint.className = 'hint';
-        hint.textContent = '(' + b.hint + ')';
-        sentence.appendChild(hint);
-      }
-    }
-  });
+                        ${!isCompleted ? `
+                            <button onclick="checkMCQAnswer(${index})" class="px-4 py-2 bg-indigo-600 text-white font-medium text-sm rounded-lg hover:bg-indigo-700 transition-colors shadow-sm">
+                                Check Choice
+                            </button>
+                        ` : ''}
 
-  const feedback = document.createElement('div');
-  feedback.className = 'feedback';
-  feedback.innerHTML = 'Full sentence: <span class="full"><em>' + fullSentence(q) + '</em></span>';
+                        <div id="mcq-feedback-${index}" class="${isCompleted ? '' : 'hidden'} mt-4"></div>
+                    </div>
+                `;
+            });
 
-  const revealBtn = document.createElement('button');
-  revealBtn.type = 'button';
-  revealBtn.className = 'reveal-link';
-  revealBtn.textContent = 'Show answer';
-  revealBtn.addEventListener('click', () => {
-    feedback.classList.add('show');
-    revealBtn.style.display = 'none';
-  });
+            html += `</div>`;
+            container.innerHTML = html;
 
-  body.appendChild(sentence);
-  body.appendChild(feedback);
-  body.appendChild(revealBtn);
-  li.appendChild(num);
-  li.appendChild(body);
-  list.appendChild(li);
-});
+            mcqData.forEach((item, index) => {
+                if (userProgress.mcq.completed.includes(index)) {
+                    showMCQFeedback(index);
+                }
+            });
+        }
 
-document.getElementById('scoreTotal').textContent = totalBlanks;
+        function checkMCQAnswer(index) {
+            const selected = document.querySelector(`input[name="mcq-${index}"]:checked`);
+            if (!selected) {
+                alert("Please select an option before checking your answer.");
+                return;
+            }
 
-function checkAll(){
-  let correct = 0;
-  document.querySelectorAll('.blank').forEach(input => {
-    const qi = input.dataset.q, bi = input.dataset.b;
-    const accepted = DATA[qi].blanks[bi].answers.map(normalize);
-    const val = normalize(input.value);
-    input.classList.remove('correct', 'incorrect');
-    if (val.length === 0) return;
-    if (accepted.includes(val)) {
-      input.classList.add('correct');
-      correct++;
-    } else {
-      input.classList.add('incorrect');
-    }
-  });
-  document.getElementById('scoreNum').textContent = correct;
-  const pct = Math.round((correct / totalBlanks) * 100);
-  document.getElementById('progressFill').style.width = pct + '%';
-}
+            const choice = parseInt(selected.value);
+            const isCorrect = choice === mcqData[index].answer;
 
-function resetAll(){
-  document.querySelectorAll('.blank').forEach(input => {
-    input.value = '';
-    input.classList.remove('correct', 'incorrect');
-  });
-  document.querySelectorAll('.feedback').forEach(f => f.classList.remove('show'));
-  document.querySelectorAll('.reveal-link').forEach(b => b.style.display = '');
-  document.getElementById('scoreNum').textContent = 0;
-  document.getElementById('progressFill').style.width = '0%';
-}
+            if (!userProgress.mcq.completed.includes(index)) {
+                userProgress.mcq.completed.push(index);
+                if (isCorrect) userProgress.mcq.score += 1;
+            }
 
-document.getElementById('checkBtn').addEventListener('click', checkAll);
-document.getElementById('resetBtn').addEventListener('click', resetAll);
+            updateScoreHeader();
+            updateProgressBar();
+            showMCQFeedback(index);
+        }
 
-document.querySelectorAll('.blank').forEach(input => {
-  input.addEventListener('keydown', e => {
-    if (e.key === 'Enter') {
-      e.preventDefault();
-      const all = Array.from(document.querySelectorAll('.blank'));
-      const idx = all.indexOf(input);
-      if (all[idx + 1]) all[idx + 1].focus();
-      else checkAll();
-    }
-  });
-});
-</script>
+        function showMCQFeedback(index) {
+            const target = mcqData[index];
+            const feedbackEl = document.getElementById(`mcq-feedback-${index}`);
+            if (!feedbackEl) return;
 
+            feedbackEl.classList.remove('hidden');
+            feedbackEl.innerHTML = `
+                <div class="p-4 rounded-lg bg-indigo-50/70 border border-indigo-100 text-sm">
+                    <div class="font-semibold text-slate-800 mb-1">
+                        Correct Answer: <span class="text-indigo-700">${target.options[target.answer]}</span>
+                    </div>
+                    <p class="text-slate-600">${target.explanation}</p>
+                </div>
+            `;
+
+            document.querySelectorAll(`input[name="mcq-${index}"]`).forEach(r => r.disabled = true);
+        }
+
+        function renderFillModule(container) {
+            let html = `
+                <div class="mb-6">
+                    <h2 class="text-xl font-bold text-slate-800 flex items-center gap-2">
+                        <i class="fas fa-pen-to-square text-indigo-600"></i>
+                        Module 3: Contextual Fill-in-the-Blanks
+                    </h2>
+                    <p class="text-sm text-slate-500 mt-1">Complete the graph descriptions using the proper drop-down vocabulary terms.</p>
+                </div>
+                <div class="space-y-8">
+            `;
+
+            fillData.forEach((item, index) => {
+                const isCompleted = userProgress.fill.completed.includes(index);
+                
+                // Construct sentence with embedded select elements
+                let sentenceHTML = item.sentence;
+                item.dropdowns.forEach(dp => {
+                    const selectMarkup = `
+                        <select id="fill-select-${index}-${dp.id}" ${isCompleted ? 'disabled' : ''} class="mx-1 px-2 py-1 bg-white border border-indigo-300 rounded-md text-indigo-800 font-semibold text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                            <option value="">-- Choose --</option>
+                            ${dp.options.map(opt => `<option value="${opt}">${opt}</option>`).join('')}
+                        </select>
+                    `;
+                    sentenceHTML = sentenceHTML.replace(`[${dp.id}]`, selectMarkup);
+                });
+
+                html += `
+                    <div class="p-5 rounded-xl border border-slate-200 bg-slate-50/50 hover:bg-white transition-all">
+                        <div class="flex justify-between items-center mb-3">
+                            <span class="text-xs font-bold text-indigo-600 bg-indigo-50 px-2.5 py-1 rounded-md border border-indigo-100">Passage ${index + 1}</span>
+                        </div>
+                        <p class="text-slate-800 font-medium text-base leading-relaxed mb-4">${sentenceHTML}</p>
+
+                        ${!isCompleted ? `
+                            <button onclick="checkFillAnswer(${index})" class="px-4 py-2 bg-indigo-600 text-white font-medium text-sm rounded-lg hover:bg-indigo-700 transition-colors shadow-sm">
+                                Submit Answers
+                            </button>
+                        ` : ''}
+
+                        <div id="fill-feedback-${index}" class="${isCompleted ? '' : 'hidden'} mt-4"></div>
+                    </div>
+                `;
+            });
+
+            html += `</div>`;
+            container.innerHTML = html;
+
+            fillData.forEach((item, index) => {
+                if (userProgress.fill.completed.includes(index)) {
+                    showFillFeedback(index);
+                }
+            });
+        }
+
+        function checkFillAnswer(index) {
+            const target = fillData[index];
+            let allCorrect = true;
+            let missingChoice = false;
+
+            target.dropdowns.forEach(dp => {
+                const selectEl = document.getElementById(`fill-select-${index}-${dp.id}`);
+                if (!selectEl || !selectEl.value) {
+                    missingChoice = true;
+                } else if (selectEl.value !== dp.correct) {
+                    allCorrect = false;
+                }
+            });
+
+            if (missingChoice) {
+                alert("Please fill in all dropdown options before evaluating.");
+                return;
+            }
+
+            if (!userProgress.fill.completed.includes(index)) {
+                userProgress.fill.completed.push(index);
+                if (allCorrect) userProgress.fill.score += 1;
+            }
+
+            updateScoreHeader();
+            updateProgressBar();
+            showFillFeedback(index);
+        }
+
+        function showFillFeedback(index) {
+            const target = fillData[index];
+            const feedbackEl = document.getElementById(`fill-feedback-${index}`);
+            if (!feedbackEl) return;
+
+            const answersText = target.dropdowns.map(dp => `${dp.id}: <strong>${dp.correct}</strong>`).join(', ');
+
+            feedbackEl.classList.remove('hidden');
+            feedbackEl.innerHTML = `
+                <div class="p-4 rounded-lg bg-indigo-50/70 border border-indigo-100 text-sm">
+                    <div class="font-semibold text-slate-800 mb-1">
+                        Expected Choices: ${answersText}
+                    </div>
+                    <p class="text-slate-600">${target.explanation}</p>
+                </div>
+            `;
+
+            target.dropdowns.forEach(dp => {
+                const selectEl = document.getElementById(`fill-select-${index}-${dp.id}`);
+                if (selectEl) selectEl.disabled = true;
+            });
+        }
+
+        function renderRephraseModule(container) {
+            let html = `
+                <div class="mb-6">
+                    <h2 class="text-xl font-bold text-slate-800 flex items-center gap-2">
+                        <i class="fas fa-retweet text-indigo-600"></i>
+                        Module 4: Sentence Rephrasing Practice
+                    </h2>
+                    <p class="text-sm text-slate-500 mt-1">Transform basic descriptions into Band 8+ academic sentences.</p>
+                </div>
+                <div class="space-y-8">
+            `;
+
+            rephraseData.forEach((item, index) => {
+                const isCompleted = userProgress.rephrase.completed.includes(index);
+                html += `
+                    <div class="p-5 rounded-xl border border-slate-200 bg-slate-50/50 hover:bg-white transition-all">
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-xs font-bold text-indigo-600 bg-indigo-50 px-2.5 py-1 rounded-md border border-indigo-100">Item ${index + 1}</span>
+                        </div>
+                        <div class="mb-3 p-3 bg-amber-50/60 border border-amber-200/60 rounded-lg text-slate-800 text-sm">
+                            <span class="font-bold text-amber-800">Basic Statement:</span> "${item.original}"
+                        </div>
+                        <p class="text-slate-700 font-medium text-sm mb-3">${item.prompt}</p>
+
+                        <div class="space-y-2 mb-4">
+                            ${item.options.map((opt, optIdx) => `
+                                <label class="flex items-start gap-3 p-3 rounded-lg border border-slate-200 bg-white cursor-pointer hover:border-indigo-300 transition-all text-sm font-medium text-slate-700">
+                                    <input type="radio" name="rephrase-${index}" value="${optIdx}" ${isCompleted ? 'disabled' : ''} class="w-4 h-4 mt-0.5 text-indigo-600 focus:ring-indigo-500">
+                                    <span>${opt}</span>
+                                </label>
+                            `).join('')}
+                        </div>
+
+                        ${!isCompleted ? `
+                            <button onclick="checkRephraseAnswer(${index})" class="px-4 py-2 bg-indigo-600 text-white font-medium text-sm rounded-lg hover:bg-indigo-700 transition-colors shadow-sm">
+                                Validate Sentence
+                            </button>
+                        ` : ''}
+
+                        <div id="rephrase-feedback-${index}" class="${isCompleted ? '' : 'hidden'} mt-4"></div>
+                    </div>
+                `;
+            });
+
+            html += `</div>`;
+            container.innerHTML = html;
+
+            rephraseData.forEach((item, index) => {
+                if (userProgress.rephrase.completed.includes(index)) {
+                    showRephraseFeedback(index);
+                }
+            });
+        }
+
+        function checkRephraseAnswer(index) {
+            const selected = document.querySelector(`input[name="rephrase-${index}"]:checked`);
+            if (!selected) {
+                alert("Please select a sentence structure option.");
+                return;
+            }
+
+            const choice = parseInt(selected.value);
+            const isCorrect = choice === rephraseData[index].correct;
+
+            if (!userProgress.rephrase.completed.includes(index)) {
+                userProgress.rephrase.completed.push(index);
+                if (isCorrect) userProgress.rephrase.score += 1;
+            }
+
+            updateScoreHeader();
+            updateProgressBar();
+            showRephraseFeedback(index);
+        }
+
+        function showRephraseFeedback(index) {
+            const target = rephraseData[index];
+            const feedbackEl = document.getElementById(`rephrase-feedback-${index}`);
+            if (!feedbackEl) return;
+
+            feedbackEl.classList.remove('hidden');
+            feedbackEl.innerHTML = `
+                <div class="p-4 rounded-lg bg-indigo-50/70 border border-indigo-100 text-sm">
+                    <div class="font-semibold text-slate-800 mb-1">
+                        Best Academic Rephrasing: <span class="text-indigo-700 font-normal">"${target.options[target.correct]}"</span>
+                    </div>
+                    <p class="text-slate-600">${target.explanation}</p>
+                </div>
+            `;
+
+            document.querySelectorAll(`input[name="rephrase-${index}"]`).forEach(r => r.disabled = true);
+        }
+
+        function updateScoreHeader() {
+            let totalScore = 0;
+            let totalQuestions = 0;
+
+            Object.keys(userProgress).forEach(key => {
+                totalScore += userProgress[key].score;
+                totalQuestions += userProgress[key].total;
+            });
+
+            const totalCompleted = Object.keys(userProgress).reduce((acc, key) => acc + userProgress[key].completed.length, 0);
+            const accuracy = totalCompleted > 0 ? Math.round((totalScore / totalCompleted) * 100) : 0;
+
+            document.getElementById('score-display').innerText = `${totalScore} / ${totalQuestions}`;
+            document.getElementById('accuracy-display').innerText = `${accuracy}%`;
+        }
+
+        function updateProgressBar() {
+            const currentData = userProgress[currentTab];
+            const count = currentData.completed.length;
+            const total = currentData.total;
+            const percentage = Math.round((count / total) * 100);
+
+            document.getElementById('module-progress-text').innerText = `${count} of ${total} Completed`;
+            document.getElementById('module-progress-bar').style.width = `${percentage}%`;
+            
+            const titles = {
+                trends: "Module 1: Trend Synonyms",
+                mcq: "Module 2: Percentages & Data",
+                fill: "Module 3: Contextual Fill-in",
+                rephrase: "Module 4: Sentence Rephrasing"
+            };
+            document.getElementById('module-title-display').innerText = titles[currentTab];
+        }
+
+        function resetAllProgress() {
+            userProgress = {
+                trends: { completed: [], score: 0, total: trendsData.length },
+                mcq: { completed: [], score: 0, total: mcqData.length },
+                fill: { completed: [], score: 0, total: fillData.length },
+                rephrase: { completed: [], score: 0, total: rephraseData.length }
+            };
+            updateScoreHeader();
+            renderExerciseView();
+        }
+    </script>
 </body>
 </html>
